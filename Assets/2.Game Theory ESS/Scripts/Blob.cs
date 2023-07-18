@@ -12,24 +12,24 @@ public enum BlobState
 public abstract class Blob : MonoBehaviour
 {
     protected BlobState state = BlobState.Idle;
-    protected bool isStateChanged = true;
+    private bool isStateChanged = true;
     
     void Start()
     {
         
     }
 
-    // void Update()
-    // {
-    //     if(isStateChanged) StateEnter();
-    //     isStateChanged = false;
-    //     
-    //     StateUpdate();
-    //
-    //     isStateChanged = TransitionCheck();
-    //     
-    //     if(isStateChanged) StateExit();
-    // }
+    void Update()
+    {
+        if(isStateChanged) StateEnter();
+        isStateChanged = false;
+        
+        StateUpdate();
+    
+        isStateChanged = TransitionCheck();
+        
+        if(isStateChanged) StateExit();
+    }
 
     protected abstract void StateEnter();
     protected abstract void StateUpdate();

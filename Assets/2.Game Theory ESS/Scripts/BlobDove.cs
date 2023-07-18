@@ -11,18 +11,6 @@ public class BlobDove : Blob
     {
         
     }
-    
-    private void Update()
-    {
-        if(isStateChanged) StateEnter();
-        isStateChanged = false;
-        
-        StateUpdate();
-
-        isStateChanged = TransitionCheck();
-        
-        if(isStateChanged) StateExit();
-    }
 
     protected override void StateEnter()
     {
