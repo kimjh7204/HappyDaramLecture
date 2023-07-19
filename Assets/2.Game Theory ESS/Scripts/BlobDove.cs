@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BlobDove : Blob
 {
-    public GameObject target;
-    
     void Start()
     {
         
@@ -18,7 +17,8 @@ public class BlobDove : Blob
         {
             case BlobState.Idle:
                 break;
-            case BlobState.FoodSearching:
+            case BlobState.Wandering:
+                wanderingTargetPos = transform.position; //타겟 포지션 초기화
                 break;
             case BlobState.Eating:
                 break;
@@ -33,12 +33,14 @@ public class BlobDove : Blob
         {
             case BlobState.Idle:
                 break;
-            case BlobState.FoodSearching:
-                var foodPos = ESSManager.instance.NearestFood(transform.position);
-                target.transform.position = foodPos;
-                
-                
-                
+            case BlobState.Wandering:
+
+                if (Vector3.Distance(transform.position, wanderingTargetPos) < 0.1f)
+                {
+                    var randomCircle = Random.insideUnitCircle;
+                    wanderingTargetPos = new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
+                    agent.SetDestination(wanderingTargetPos);
+                }
                 
                 
                 break;
@@ -55,7 +57,7 @@ public class BlobDove : Blob
         {
             case BlobState.Idle:
                 break;
-            case BlobState.FoodSearching:
+            case BlobState.Wandering:
                 break;
             case BlobState.Eating:
                 break;
@@ -68,7 +70,7 @@ public class BlobDove : Blob
     {
         if (state == BlobState.Idle)
         {
-            state = BlobState.FoodSearching;
+            state = BlobState.Wandering;
             return true;
         }
         
