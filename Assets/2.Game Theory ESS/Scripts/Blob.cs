@@ -14,9 +14,10 @@ public enum BlobState
 public abstract class Blob : MonoBehaviour
 {
     protected NavMeshAgent agent;
+
+    protected Food foundFood;
     
     protected BlobState state = BlobState.Idle;
-
 
     protected Vector3 wanderingTargetPos;
     protected const float WanderingRange = 5f;
@@ -45,4 +46,18 @@ public abstract class Blob : MonoBehaviour
     protected abstract void StateExit();
 
     protected abstract bool TransitionCheck();
+
+    protected void FoodFinding()
+    {
+        RaycastHit[] hits = Physics.SphereCastAll(
+            transform.position,
+            WanderingRange,
+            Vector3.up,
+            0f, 1<<3);
+
+        if (hits.Length > 0)
+            foundFood = hits[0].transform.GetComponent<Food>();
+        else
+            foundFood = null;
+    }
 }

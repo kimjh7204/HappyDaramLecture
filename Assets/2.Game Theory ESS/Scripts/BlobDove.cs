@@ -41,8 +41,8 @@ public class BlobDove : Blob
                     wanderingTargetPos = new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
                     agent.SetDestination(wanderingTargetPos);
                 }
-                
-                
+
+                FoodFinding();
                 break;
             case BlobState.Eating:
                 break;
