@@ -13,14 +13,22 @@ public class BlobDove : Blob
 
     protected override void StateEnter()
     {
-        switch (state)
+        switch (curState)
         {
             case BlobState.Idle:
                 break;
             case BlobState.Wandering:
-                wanderingTargetPos = transform.position; //타겟 포지션 초기화
+                moveTargetPos = transform.position; //타겟 포지션 초기화
+                ESSManager.instance.tickRate += FoodFinding;
+                break;
+            case BlobState.FoodTracing:
+                moveTargetPos = foundFood.transform.position;
+                agent.SetDestination(moveTargetPos);
                 break;
             case BlobState.Eating:
+                // if(foundFood != null)
+                //     foundFood.BlobRegistration(this);
+                foundFood?.BlobRegistration(this);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -29,20 +37,21 @@ public class BlobDove : Blob
 
     protected override void StateUpdate()
     {
-        switch (state)
+        switch (curState)
         {
             case BlobState.Idle:
                 break;
             case BlobState.Wandering:
 
-                if (Vector3.Distance(transform.position, wanderingTargetPos) < 0.1f)
+                if (Vector3.Distance(transform.position, moveTargetPos) < 0.1f)
                 {
                     var randomCircle = Random.insideUnitCircle;
-                    wanderingTargetPos = new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
-                    agent.SetDestination(wanderingTargetPos);
+                    moveTargetPos = new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
+                    agent.SetDestination(moveTargetPos);
                 }
-
-                FoodFinding();
+                
+                break;
+            case BlobState.FoodTracing:
                 break;
             case BlobState.Eating:
                 break;
@@ -53,11 +62,14 @@ public class BlobDove : Blob
 
     protected override void StateExit()
     {
-        switch (state)
+        switch (curState)
         {
             case BlobState.Idle:
                 break;
             case BlobState.Wandering:
+                ESSManager.instance.tickRate -= FoodFinding;
+                break;
+            case BlobState.FoodTracing:
                 break;
             case BlobState.Eating:
                 break;
@@ -68,10 +80,34 @@ public class BlobDove : Blob
 
     protected override bool TransitionCheck()
     {
-        if (state == BlobState.Idle)
+        switch (curState)
         {
-            state = BlobState.Wandering;
-            return true;
+            case BlobState.Idle:
+                nextState = BlobState.Wandering;
+                return true;
+            case BlobState.Wandering:
+                if (foundFood != null)
+                {
+                    nextState = BlobState.FoodTracing;
+                    return true;
+                }
+                break;
+            case BlobState.FoodTracing:
+                if (Vector3.Distance(transform.position, moveTargetPos) < 0.1f)
+                {
+                    nextState = BlobState.Eating;
+                    return true;
+                }
+                break;
+            case BlobState.Eating:
+                if (foundFood == null)
+                {
+                    nextState = BlobState.Idle;
+                }
+                
+                return true;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
         
         return false;

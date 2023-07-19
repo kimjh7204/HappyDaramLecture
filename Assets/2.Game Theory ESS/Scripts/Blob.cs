@@ -16,11 +16,17 @@ public abstract class Blob : MonoBehaviour
     protected NavMeshAgent agent;
 
     protected Food foundFood;
-    
-    protected BlobState state = BlobState.Idle;
 
-    protected Vector3 wanderingTargetPos;
-    protected const float WanderingRange = 5f;
+    protected int energy = 50;
+    
+    private const float Scaler = 0.01f;
+    private const float MinimumScale = 0.5f;
+    
+    protected BlobState curState = BlobState.Idle;
+    protected BlobState nextState = BlobState.Idle;
+
+    protected Vector3 moveTargetPos;
+    protected const float WanderingRange = 10f;
 
     private bool isStateChanged = true;
     
@@ -31,6 +37,8 @@ public abstract class Blob : MonoBehaviour
 
     void Update()
     {
+        curState = nextState;
+        
         if(isStateChanged) StateEnter();
         isStateChanged = false;
         
@@ -59,5 +67,16 @@ public abstract class Blob : MonoBehaviour
             foundFood = hits[0].transform.GetComponent<Food>();
         else
             foundFood = null;
+    }
+
+    public void EatFood()
+    {
+        energy++;
+        transform.localScale = Vector3.one * (energy * Scaler + MinimumScale);
+    }
+
+    public void FinishEating()
+    {
+        foundFood = null;
     }
 }
