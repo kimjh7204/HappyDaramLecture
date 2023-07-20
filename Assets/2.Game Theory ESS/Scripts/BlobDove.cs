@@ -26,8 +26,8 @@ public class BlobDove : Blob
                 agent.SetDestination(moveTargetPos);
                 break;
             case BlobState.Eating:
-                // if(foundFood != null)
-                //     foundFood.BlobRegistration(this);
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
                 foundFood?.BlobRegistration(this);
                 break;
             default:
@@ -72,12 +72,15 @@ public class BlobDove : Blob
             case BlobState.FoodTracing:
                 break;
             case BlobState.Eating:
+                agent.isStopped = false;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
+    //------------------------------------------------------------------
+    
     protected override bool TransitionCheck()
     {
         switch (curState)
@@ -93,7 +96,7 @@ public class BlobDove : Blob
                 }
                 break;
             case BlobState.FoodTracing:
-                if (Vector3.Distance(transform.position, moveTargetPos) < 0.1f)
+                if (Vector3.Distance(transform.position, moveTargetPos) < 1f)
                 {
                     nextState = BlobState.Eating;
                     return true;
@@ -103,13 +106,20 @@ public class BlobDove : Blob
                 if (foundFood == null)
                 {
                     nextState = BlobState.Idle;
+                    return true;
                 }
-                
-                return true;
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
         
         return false;
+    }
+
+    private void OnDestroy()
+    {
+        base.OnDestroy();
+        ESSManager.instance.tickRate -= FoodFinding;
+
     }
 }

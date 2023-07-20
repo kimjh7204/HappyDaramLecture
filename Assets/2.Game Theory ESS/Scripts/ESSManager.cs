@@ -16,6 +16,7 @@ public class ESSManager : MonoBehaviour
     public TickRate tickRate;
     
     public event TickRate FoodEatingEvent;
+    public event TickRate FoodComsumeEvent;
 
     private const float width = 50f;
     
@@ -34,36 +35,9 @@ public class ESSManager : MonoBehaviour
     {
         
     }
+    
+    
 
-    // public Vector3 NearestFood(Vector3 myPos)
-    // {
-    //     var minDist = float.MaxValue;
-    //     var result = Vector3.zero;
-    //     
-    //     // for (int i = 0; i < allFood.Count; i++)
-    //     // {
-    //     //     var dist = (myPos - allFood[i].position).magnitude;
-    //     //     if (dist < minDist)
-    //     //     {
-    //     //         minDist = dist;
-    //     //         result = allFood[i].position;
-    //     //     }
-    //     // }
-    //
-    //     foreach (var foodTransform in allFood)
-    //     {
-    //         var dist = (myPos - foodTransform.position).magnitude;
-    //         if (dist < minDist)
-    //         {
-    //             minDist = dist;
-    //             result = foodTransform.position;
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
-    
-    
     private IEnumerator Timer()
     {
         while (true)
@@ -77,7 +51,10 @@ public class ESSManager : MonoBehaviour
 
             if (tickRate != null)
                 tickRate();
-
+            
+            if(FoodComsumeEvent != null)
+                FoodComsumeEvent();
+            
             yield return new WaitForSeconds(1f);
         }
     }

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public enum BlobState
 {
@@ -33,10 +35,15 @@ public abstract class Blob : MonoBehaviour
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        ESSManager.instance.FoodComsumeEvent += FoodConsume;
     }
 
     void Update()
     {
+        transform.localScale = Vector3.one * (energy * Scaler + MinimumScale);
+        if (energy >= 100)
+            Duplication();
+
         curState = nextState;
         
         if(isStateChanged) StateEnter();
@@ -52,7 +59,7 @@ public abstract class Blob : MonoBehaviour
     protected abstract void StateEnter();
     protected abstract void StateUpdate();
     protected abstract void StateExit();
-
+    //------------------------------------------------------------------
     protected abstract bool TransitionCheck();
 
     protected void FoodFinding()
@@ -72,11 +79,48 @@ public abstract class Blob : MonoBehaviour
     public void EatFood()
     {
         energy++;
-        transform.localScale = Vector3.one * (energy * Scaler + MinimumScale);
     }
 
     public void FinishEating()
     {
         foundFood = null;
+    }
+
+    private void FoodConsume()
+    {
+        energy -= 1;
+        if (energy <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Duplication()
+    {
+        energy -= 50;
+
+        var randomAngle = Random.value % (Mathf.PI * 2f);
+        var posX = Mathf.Sin(randomAngle);
+        var posY = Mathf.Cos(randomAngle);
+
+        var newPos = new Vector3(posX, 0f, posY) * WanderingRange;
+        
+        if (this.GetType() == typeof(BlobDove))
+        {
+            
+            Instantiate(ESSManager.instance.blobDove,
+                transform.position + newPos, 
+                Quaternion.identity);
+        }
+        
+        // if (this.GetType() == typeof(BlobHawk))
+        // {
+        //     Instantiate(ESSManager.instance.blobHawk);
+        // }
+    }
+    
+    protected void OnDestroy()
+    {
+        ESSManager.instance.FoodComsumeEvent -= FoodConsume;
     }
 }
