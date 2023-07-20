@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using _2.Game_Theory_ESS.Scripts;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
@@ -88,7 +89,7 @@ public abstract class Blob : MonoBehaviour
 
     private void FoodConsume()
     {
-        energy -= 1;
+        energy -= 2;
         if (energy <= 0)
         {
             Destroy(gameObject);
@@ -107,16 +108,17 @@ public abstract class Blob : MonoBehaviour
         
         if (this.GetType() == typeof(BlobDove))
         {
-            
             Instantiate(ESSManager.instance.blobDove,
                 transform.position + newPos, 
                 Quaternion.identity);
         }
         
-        // if (this.GetType() == typeof(BlobHawk))
-        // {
-        //     Instantiate(ESSManager.instance.blobHawk);
-        // }
+        if (this.GetType() == typeof(BlobHawk))
+        {
+            Instantiate(ESSManager.instance.blobHawk,
+                transform.position + newPos, 
+                Quaternion.identity);
+        }
     }
     
     protected void OnDestroy()

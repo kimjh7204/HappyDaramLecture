@@ -6,11 +6,6 @@ using Random = UnityEngine.Random;
 
 public class BlobDove : Blob
 {
-    void Start()
-    {
-        
-    }
-
     protected override void StateEnter()
     {
         switch (curState)
@@ -22,6 +17,7 @@ public class BlobDove : Blob
                 ESSManager.instance.tickRate += FoodFinding;
                 break;
             case BlobState.FoodTracing:
+                if (foundFood == null) break;
                 moveTargetPos = foundFood.transform.position;
                 agent.SetDestination(moveTargetPos);
                 break;
@@ -46,7 +42,20 @@ public class BlobDove : Blob
                 if (Vector3.Distance(transform.position, moveTargetPos) < 0.1f)
                 {
                     var randomCircle = Random.insideUnitCircle;
-                    moveTargetPos = new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
+                    moveTargetPos = 
+                        transform.position +
+                        new Vector3(randomCircle.x, 0f, randomCircle.y) * WanderingRange;
+
+                    var width = ESSManager.width - 2f;
+                    if (moveTargetPos.x > width)
+                        moveTargetPos.x = width;
+                    if (moveTargetPos.x < -width)
+                        moveTargetPos.x = -width;
+                    if (moveTargetPos.z > width)
+                        moveTargetPos.z = width;
+                    if (moveTargetPos.z < -width)
+                        moveTargetPos.z = -width;
+                    
                     agent.SetDestination(moveTargetPos);
                 }
                 

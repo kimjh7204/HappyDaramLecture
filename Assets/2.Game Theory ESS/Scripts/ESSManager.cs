@@ -18,7 +18,7 @@ public class ESSManager : MonoBehaviour
     public event TickRate FoodEatingEvent;
     public event TickRate FoodComsumeEvent;
 
-    private const float width = 50f;
+    public const float width = 50f;
     
     public static ESSManager instance;
     
@@ -30,13 +30,6 @@ public class ESSManager : MonoBehaviour
         StartCoroutine(Timer());
         StartCoroutine(FoodEatingTimer());
     }
-
-    private void Update()
-    {
-        
-    }
-    
-    
 
     private IEnumerator Timer()
     {
