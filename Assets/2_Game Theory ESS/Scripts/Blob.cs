@@ -2,151 +2,150 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-namespace _2_Game_Theory_ESS.Scripts
+public enum BlobState
 {
-    public enum BlobState
-    {
-        Idle,
-        Wandering,
-        FoodTracing,
-        Eating
-    }
+	Idle,
+	Wandering,
+	FoodTracing,
+	Eating
+}
 
-    public abstract class Blob : MonoBehaviour
-    {
-        protected NavMeshAgent agent;
+public abstract class Blob : MonoBehaviour
+{
+	protected NavMeshAgent agent;
 
-        protected Food foundFood;
+	protected Food foundFood;
 
-        protected int energy = 50;
-    
-        private const float Scaler = 0.01f;
-        private const float MinimumScale = 0.5f;
-    
-        protected BlobState curState = BlobState.Idle;
-        protected BlobState nextState = BlobState.Idle;
+	protected int energy = 50;
 
-        protected Vector3 moveTargetPos;
-        protected const float WanderingRange = 10f;
+	private const float Scaler = 0.01f;
+	private const float MinimumScale = 0.5f;
 
-        private bool isStateChanged = true;
-    
-        void Awake()
-        {
-            agent = GetComponent<NavMeshAgent>();
-            ESSManager.instance.FoodComsumeEvent += FoodConsume;
-        }
+	protected BlobState curState = BlobState.Idle;
+	protected BlobState nextState = BlobState.Idle;
 
-        void Update()
-        {
-            transform.localScale = Vector3.one * (energy * Scaler + MinimumScale);
-            if (energy >= 100)
-                Duplication();
+	protected Vector3 moveTargetPos;
+	protected const float WanderingRange = 10f;
 
-            curState = nextState;
-        
-            if(isStateChanged) StateEnter();
-            isStateChanged = false;
-        
-            StateUpdate();
-    
-            isStateChanged = TransitionCheck();
-        
-            if(isStateChanged) StateExit();
-        }
+	private bool isStateChanged = true;
 
-        protected abstract void StateEnter();
-        protected abstract void StateUpdate();
-        protected abstract void StateExit();
-        //------------------------------------------------------------------
-        protected abstract bool TransitionCheck();
+	void Awake()
+	{
+		agent = GetComponent<NavMeshAgent>();
+		ESSManager.instance.FoodComsumeEvent += FoodConsume;
+	}
 
-        protected void FoodFinding()
-        {
-            RaycastHit[] hits = Physics.SphereCastAll(
-                transform.position,
-                WanderingRange,
-                Vector3.up,
-                0f, 1<<3);
+	void Update()
+	{
+		transform.localScale = Vector3.one * (energy * Scaler + MinimumScale);
+		if (energy >= 100)
+			Duplication();
 
-            if (hits.Length > 0)
-            {
-                if (this is BlobDove)
-                {
-                    foreach (var hit in hits)
-                    {
-                        var foundFoodTemp = hit.transform.GetComponent<Food>();
-                    
-                        if (!foundFoodTemp.isHawk)
-                        {
-                            foundFood = foundFoodTemp;
-                            break;
-                        }
-                    }
-                }
-                else if(this is BlobHawk)
-                {
-                    foundFood = hits[0].transform.GetComponent<Food>();
-                }
-            }
-            else
-                foundFood = null;
-        }
+		curState = nextState;
 
-        public void EatFood(bool cancel)
-        {
-            if(!cancel) energy++;
-        }
+		if (isStateChanged) StateEnter();
+		isStateChanged = false;
 
-        public void FinishEating()
-        {
-            foundFood = null;
-        }
+		StateUpdate();
 
-        private void FoodConsume()
-        {
-            energy -= 1;
-            if (energy <= 0)
-            {
-                Destroy(gameObject);
-            }
-        }
+		isStateChanged = TransitionCheck();
 
-        private void Duplication()
-        {
-            energy -= 50;
+		if (isStateChanged) StateExit();
+	}
 
-            var randomAngle = Random.value % (Mathf.PI * 2f);
-            var posX = Mathf.Sin(randomAngle);
-            var posY = Mathf.Cos(randomAngle);
+	protected abstract void StateEnter();
+	protected abstract void StateUpdate();
 
-            var newPos = new Vector3(posX, 0f, posY) * WanderingRange;
-        
-            if (this.GetType() == typeof(BlobDove))
-            {
-                Instantiate(ESSManager.instance.blobDove,
-                    transform.position + newPos, 
-                    Quaternion.identity);
-            }
-        
-            if (this.GetType() == typeof(BlobHawk))
-            {
-                Instantiate(ESSManager.instance.blobHawk,
-                    transform.position + newPos, 
-                    Quaternion.identity);
-            }
-        }
+	protected abstract void StateExit();
 
-        public void ResetFood()
-        {
-            //Debug.Log(foundFood != null);
-            if(foundFood != null) foundFood.RemoveBlobReserve(this);
-            foundFood = null;
-        }
-    
-        protected void OnDestroy()
-        {
-            ESSManager.instance.FoodComsumeEvent -= FoodConsume;
-        }
-    }
+	//------------------------------------------------------------------
+	protected abstract bool TransitionCheck();
+
+	protected void FoodFinding()
+	{
+		RaycastHit[] hits = Physics.SphereCastAll(
+			transform.position,
+			WanderingRange,
+			Vector3.up,
+			0f, 1 << 3);
+
+		if (hits.Length > 0)
+		{
+			if (this is BlobDove)
+			{
+				foreach (var hit in hits)
+				{
+					var foundFoodTemp = hit.transform.GetComponent<Food>();
+
+					if (!foundFoodTemp.isHawk)
+					{
+						foundFood = foundFoodTemp;
+						break;
+					}
+				}
+			}
+			else if (this is BlobHawk)
+			{
+				foundFood = hits[0].transform.GetComponent<Food>();
+			}
+		}
+		else
+			foundFood = null;
+	}
+
+	public void EatFood(bool cancel)
+	{
+		if (!cancel) energy++;
+	}
+
+	public void FinishEating()
+	{
+		foundFood = null;
+	}
+
+	private void FoodConsume()
+	{
+		energy -= 1;
+		if (energy <= 0)
+		{
+			Destroy(gameObject);
+		}
+	}
+
+	private void Duplication()
+	{
+		energy -= 50;
+
+		var randomAngle = Random.value % (Mathf.PI * 2f);
+		var posX = Mathf.Sin(randomAngle);
+		var posY = Mathf.Cos(randomAngle);
+
+		var newPos = new Vector3(posX, 0f, posY) * WanderingRange;
+
+		if (this.GetType() == typeof(BlobDove))
+		{
+			Instantiate(ESSManager.instance.blobDove,
+				transform.position + newPos,
+				Quaternion.identity);
+		}
+
+		if (this.GetType() == typeof(BlobHawk))
+		{
+			Instantiate(ESSManager.instance.blobHawk,
+				transform.position + newPos,
+				Quaternion.identity);
+		}
+	}
+
+	public void ResetFood()
+	{
+		//Debug.Log(foundFood != null);
+		if (foundFood != null) foundFood.RemoveBlobReserve(this);
+		foundFood = null;
+	}
+
+	protected void OnDestroy()
+	{
+		ESSManager.instance.FoodComsumeEvent -= FoodConsume;
+	}
 }

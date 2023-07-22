@@ -2,9 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace _2_Game_Theory_ESS.Scripts
-{
-    public class BlobDove : Blob
+public class BlobDove : Blob
     {
         protected override void StateEnter()
         {
@@ -132,4 +130,3 @@ namespace _2_Game_Theory_ESS.Scripts
 
         }
     }
-}
