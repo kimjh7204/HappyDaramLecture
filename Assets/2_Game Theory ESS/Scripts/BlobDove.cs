@@ -61,6 +61,7 @@ public class BlobDove : Blob
                 case BlobState.FoodTracing:
                     break;
                 case BlobState.Eating:
+                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -127,6 +128,6 @@ public class BlobDove : Blob
         {
             base.OnDestroy();
             ESSManager.instance.tickRate -= FoodFinding;
-
+            ESSManager.instance.curDoveCount--;
         }
     }
