@@ -130,5 +130,6 @@ public class BlobHawk : Blob
 	{
 		base.OnDestroy();
 		ESSManager.instance.tickRate -= FoodFinding;
+		ESSManager.instance.curHawkCount--;
 	}
 }

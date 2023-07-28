@@ -122,18 +122,20 @@ public abstract class Blob : MonoBehaviour
 
 		var newPos = new Vector3(posX, 0f, posY) * WanderingRange;
 
-		if (this.GetType() == typeof(BlobDove))
+		if (this.GetType() == typeof(BlobDove)) //if(this is BlobDove)
 		{
 			Instantiate(ESSManager.instance.blobDove,
 				transform.position + newPos,
 				Quaternion.identity);
+			ESSManager.instance.curDoveCount++;
 		}
 
-		if (this.GetType() == typeof(BlobHawk))
+		if (this.GetType() == typeof(BlobHawk)) //if(this is BlobHawk)
 		{
 			Instantiate(ESSManager.instance.blobHawk,
 				transform.position + newPos,
 				Quaternion.identity);
+			ESSManager.instance.curHawkCount++;
 		}
 	}
 
