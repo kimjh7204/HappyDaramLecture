@@ -15,4 +15,4 @@ MonoBehaviour:
   itemName: item2
   description: This is item2
   itemImage: {fileID: 21300000, guid: ed07e341e8f16d14680bd85d9d0f7422, type: 3}
-  obj: {fileID: 85221830639091833, guid: f6931068f73f5ff49bf961e795bc25b2, type: 3}
+  obj: {fileID: 802845330378675356, guid: 6c73ed418e1226d4eb72c06081301eea, type: 3}

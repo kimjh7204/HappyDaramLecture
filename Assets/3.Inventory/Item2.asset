@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Item2
   m_EditorClassIdentifier: 
   itemName: item1
-  description: This is item1
+  description: asldkjasflkw;'l; asd;aks d;lak wasd
   itemImage: {fileID: 21300000, guid: eaa893238bebd8d4babd20dd8ae8a2cf, type: 3}
-  obj: {fileID: 2710542863813130353, guid: 6c73ed418e1226d4eb72c06081301eea, type: 3}
+  obj: {fileID: 3329817397901484057, guid: f6931068f73f5ff49bf961e795bc25b2, type: 3}

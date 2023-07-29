@@ -6,17 +6,33 @@ public class InvetoryManager : MonoBehaviour
 {
     public GameObject itemUIPrefab;
     public RectTransform inventoryPanel;
+    public RectTransform dragLayer;
 
-    private List<ItemUI> items = new List<ItemUI>();
+    public Tooltip tooltip;
+
+    [SerializeField] private List<ItemSlot> itemSlots = new List<ItemSlot>();
     
     public MyItem testItem;
     
     private void Start()
     {
-        var tempItemUI = Instantiate(itemUIPrefab, inventoryPanel);
-        var temp = tempItemUI.GetComponent<ItemUI>();
+        for(var i = 0;  i < itemSlots.Count; i++)
+        {
+            if(itemSlots[i].item == null)
+            {
+                GameObject tempItemUI = Instantiate(itemUIPrefab, itemSlots[i].transform);
+                ItemUI temp = tempItemUI.GetComponent<ItemUI>();
+                itemSlots[i].item = temp;
+
+                temp.Init(testItem, this, itemSlots[i]);
+
+                break;
+            }
+        }
+
+        //var tempItemUI = Instantiate(itemUIPrefab, inventoryPanel);
+        //var temp = tempItemUI.GetComponent<ItemUI>();
         
-        items.Add(temp);
-        temp.Init(testItem);
+        //temp.Init(testItem, this);
     }
 }
