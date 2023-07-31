@@ -26,6 +26,7 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 
         invetoryManager = manager;
         itemSlot = slot;
+        itemSlot.item = this;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -43,7 +44,7 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        //invetoryManager.tooltip.Disable();
+        invetoryManager.draggingItem = this;
         itemImage.raycastTarget = false;
         
         rectTransform.SetParent(invetoryManager.dragLayer);
@@ -51,15 +52,42 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        rectTransform.SetParent(itemSlot.transform);
-        rectTransform.localPosition = Vector3.zero;
+        invetoryManager.draggingItem = null;
 
-        //invetoryManager.tooltip.SetTooltip(rectTransform.position, itemData.description);
+        if (invetoryManager.selectedSlot == null)
+        {
+            rectTransform.SetParent(itemSlot.transform);
+        }
+        else
+        {
+            if (invetoryManager.selectedSlot.item == null)
+            {
+                itemSlot.item = null;
+                rectTransform.SetParent(invetoryManager.selectedSlot.transform);
+                itemSlot = invetoryManager.selectedSlot;
+            }
+            else //Item Swap
+            {
+                invetoryManager.selectedSlot.item.ChangeSlot(itemSlot);
+                ChangeSlot(invetoryManager.selectedSlot);
+            }
+            
+        }
+
+        rectTransform.localPosition = Vector3.zero;
         itemImage.raycastTarget = true;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         rectTransform.position = eventData.position;
+    }
+
+    private void ChangeSlot(ItemSlot slot)
+    {
+        slot.item = this;
+        rectTransform.SetParent(slot.transform);
+        itemSlot = slot;
+        rectTransform.localPosition = Vector3.zero;
     }
 }
