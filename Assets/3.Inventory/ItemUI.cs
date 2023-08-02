@@ -53,29 +53,25 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
     public void OnPointerUp(PointerEventData eventData)
     {
         invetoryManager.draggingItem = null;
-
-        if (invetoryManager.selectedSlot == null)
-        {
-            rectTransform.SetParent(itemSlot.transform);
-        }
-        else
-        {
-            if (invetoryManager.selectedSlot.item == null)
-            {
-                itemSlot.item = null;
-                rectTransform.SetParent(invetoryManager.selectedSlot.transform);
-                itemSlot = invetoryManager.selectedSlot;
-            }
-            else //Item Swap
-            {
-                invetoryManager.selectedSlot.item.ChangeSlot(itemSlot);
-                ChangeSlot(invetoryManager.selectedSlot);
-            }
-            
-        }
-
-        rectTransform.localPosition = Vector3.zero;
         itemImage.raycastTarget = true;
+        
+        var newItemSlot = invetoryManager.selectedSlot;
+        
+        if (newItemSlot == null)        //지정된 슬롯 없음 => 자기 자리로 돌아감
+        {
+            SetItemOnSlot(itemSlot);
+            return;
+        }
+        
+        if (newItemSlot.IsItemIn)       //옮기려는 슬롯에 이미 아이템 있음 => Swap
+        {
+            newItemSlot.item.SetItemOnSlot(itemSlot);
+            ChangeItemSlot(newItemSlot);
+        }
+        else                            //옮기려는 슬롯이 비어있음 => 그냥 Set Item
+        {
+            SetItemOnSlot(newItemSlot);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -83,11 +79,17 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         rectTransform.position = eventData.position;
     }
 
-    private void ChangeSlot(ItemSlot slot)
+    private void ChangeItemSlot(ItemSlot slot)
     {
-        slot.item = this;
-        rectTransform.SetParent(slot.transform);
+        itemSlot.item = null;
+        SetItemOnSlot(slot);
+    }
+
+    private void SetItemOnSlot(ItemSlot slot)
+    {
         itemSlot = slot;
+        itemSlot.item = this;
+        rectTransform.SetParent(itemSlot.transform);
         rectTransform.localPosition = Vector3.zero;
     }
 }

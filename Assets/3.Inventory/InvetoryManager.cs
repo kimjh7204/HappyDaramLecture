@@ -10,20 +10,10 @@ public class InvetoryManager : MonoBehaviour
 
     public Tooltip tooltip;
 
-    private ItemUI _draggingItem = null;
-    public ItemUI draggingItem
-    {
-        get => _draggingItem;
-        set => _draggingItem = value;
-    }
+    public ItemUI draggingItem = null;
 
-    private ItemSlot _selectedSlot = null;
-    public ItemSlot selectedSlot
-    {
-        get => _selectedSlot;
-        set => _selectedSlot = value;
-    }
-    
+    public ItemSlot selectedSlot = null;
+
     [SerializeField] private List<ItemSlot> itemSlots = new List<ItemSlot>();
 
     private void Start()

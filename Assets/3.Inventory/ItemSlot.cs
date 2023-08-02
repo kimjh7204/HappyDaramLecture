@@ -8,6 +8,8 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private InvetoryManager manager;
     public ItemUI item;
 
+    public bool IsItemIn => item != null;
+    
     public void Init(InvetoryManager inventoryManager)
     {
         manager = inventoryManager;
