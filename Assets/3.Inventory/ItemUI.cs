@@ -65,12 +65,12 @@ public class ItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         
         if (newItemSlot.IsItemIn)       //옮기려는 슬롯에 이미 아이템 있음 => Swap
         {
-            newItemSlot.item.SetItemOnSlot(itemSlot);
-            ChangeItemSlot(newItemSlot);
+            newItemSlot.item.ChangeItemSlot(itemSlot);
+            SetItemOnSlot(newItemSlot);
         }
         else                            //옮기려는 슬롯이 비어있음 => 그냥 Set Item
         {
-            SetItemOnSlot(newItemSlot);
+            ChangeItemSlot(newItemSlot);
         }
     }
 
