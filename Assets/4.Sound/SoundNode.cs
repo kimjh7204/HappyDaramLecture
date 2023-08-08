@@ -6,6 +6,8 @@ public class SoundNode : MonoBehaviour
 {
     private AudioSource audioSource;
 
+    private Coroutine _coroutine;
+    
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -24,7 +26,7 @@ public class SoundNode : MonoBehaviour
     private IEnumerator WaitForSoundEnd()
     {
         yield return new WaitWhile(() => audioSource.isPlaying);
-        //lamda expression + ÀÍ¸í ¸Ş¼­µå
+        //lamda expression + ìµëª… ë©”ì„œë“œ
 
         SoundManager.instance.EnqueueNode(this);
     }

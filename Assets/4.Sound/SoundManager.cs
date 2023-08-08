@@ -39,20 +39,41 @@ public class SoundManager : MonoBehaviour
 
     public void PlaySound(string key)
     {
+        PlaySoundNode(key);
+    }
+
+    public void PlaySound(string key, Vector3 pos)
+    {
+        var nodeTransform = PlaySoundNode(key);
+        nodeTransform.position = pos;
+    }
+
+    public void PlaySound(string key, Transform parent)
+    {
+        var nodeTransform = PlaySoundNode(key);
+        nodeTransform.SetParent(parent);
+        nodeTransform.localPosition = Vector3.zero;
+    }
+
+    private Transform PlaySoundNode(string key)
+    {
         if (!soundsDictionary.ContainsKey(key))
         {
             Debug.LogError("SFX is not found : " + key);
-            return;
+            return null;
         }
 
         var node = soundsPool.Dequeue();
         node.PlaySound(soundsDictionary[key]);
+        return node.transform;
     }
 
     public void EnqueueNode(SoundNode node)
     {
+        node.transform.SetParent(transform);
+        node.transform.localPosition = Vector3.zero;
         soundsPool.Enqueue(node);
-        Debug.Log("Enqueue", node.gameObject);
+        //Debug.Log("Enqueue", node.gameObject);
     }
 }
 
