@@ -27,7 +27,7 @@ public class TestMenu : MonoBehaviour
     
     private void Start()
     {
-        var objs = Resources.LoadAll<GameObject>("");
+        var objs = Resources.LoadAll<GameObject>("SaveLoadObjects");
         
         foreach (var obj in objs)
         {
