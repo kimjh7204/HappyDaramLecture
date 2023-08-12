@@ -38,7 +38,7 @@ public class TestMenu : MonoBehaviour
     private readonly Dictionary<string, GameObject> loadedObjects = new Dictionary<string, GameObject>();
     private string[] objectKeys;
 
-    private List<GameObject> generatedObject = new List<GameObject>();
+    private List<ObjectData> generatedObjectData = new List<ObjectData>();
     
     private const float FieldWidth = 30f;
     private const float FieldHeight = 20f;
@@ -70,21 +70,43 @@ public class TestMenu : MonoBehaviour
 
     public void GenerateObjects()
     {
-        foreach (var obj in generatedObject)
+        GenerateObjects(null);
+    }
+
+    public void GenerateObjects(MyGameData.ObjectData[] data)
+    {
+        foreach (var objData in generatedObjectData)
         {
-            Destroy(obj);
+            Destroy(objData.gameObject);
         }
         
-        generatedObject.Clear();
+        generatedObjectData.Clear();
 
         for (var i = 0; i < _numOfObj; i++)
         {
-            var randomIdx = Random.Range(0, objectKeys.Length); //[0, objectKeys.Length)
-            var randomPos = new Vector3(Random.Range(-FieldWidth, FieldWidth), 1f, Random.Range(-FieldHeight, FieldHeight));
-            
-            var obj = Instantiate(loadedObjects[objectKeys[randomIdx]], randomPos, Random.rotation);
-            
-            generatedObject.Add(obj);
+            string objKey;
+            Vector3 pos;
+            Quaternion rot;
+
+            if (data is null)
+            {
+                objKey = objectKeys[Random.Range(0, objectKeys.Length)]; //[0, objectKeys.Length)
+                pos = new Vector3(Random.Range(-FieldWidth, FieldWidth), 1f, Random.Range(-FieldHeight, FieldHeight));
+                rot = Random.rotation;
+            }
+            else
+            {
+                objKey = data[i].key;
+                pos = data[i].pos;
+                rot = data[i].rot;
+            }
+
+            GameObject obj = Instantiate(loadedObjects[objKey], pos, rot);
+
+            ObjectData objectData = obj.AddComponent<ObjectData>();
+            objectData.objKey = objKey;
+
+            generatedObjectData.Add(objectData);
         }
     }
 
@@ -100,13 +122,27 @@ public class TestMenu : MonoBehaviour
         {
             options[i] = systemOptions[i].isOn;
         }
-        
+
+
+        MyGameData.ObjectData[] objectsData = new MyGameData.ObjectData[generatedObjectData.Count];
+        for(var i = 0; i < generatedObjectData.Count; i++)
+        {
+            objectsData[i] = new MyGameData.ObjectData()
+            {
+                key = generatedObjectData[i].objKey,
+                pos = generatedObjectData[i].transform.position,
+                rot = generatedObjectData[i].transform.rotation
+            };
+        }
+
+
         MyGameData data = new()
         {
             lv = level,
             playerName = playerName.text,
             numOfObject = numOfObj,
-            options = options
+            options = options,
+            objectsData = objectsData,
         };
 
         SaveLoadManager.SaveData(data);
@@ -124,5 +160,7 @@ public class TestMenu : MonoBehaviour
         {
             systemOptions[i].isOn = data.options[i];
         }
+
+        GenerateObjects(data.objectsData);
     }
 }

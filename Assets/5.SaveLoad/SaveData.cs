@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class GameData
@@ -13,16 +14,17 @@ public class MyGameData : GameData
 	public string playerName;
 	public bool[] options;
 	public int numOfObject;
-	// public ObjectData[] objectsData;
-	//
-	//
-	// //Inner class
-	// public class ObjectData
-	// {
-	// 	public string key;
-	// 	public Vector3 pos;
-	// 	public Quaternion rot;
-	// }
+
+	public ObjectData[] objectsData;
+
+	//Inner class
+	[Serializable]
+	public class ObjectData
+	{
+		public string key;
+		public Vector3 pos;
+		public Quaternion rot;
+	}
 
 	public override string GetDirectory()
 	=> Application.persistentDataPath + "/MyGameData";
